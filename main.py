@@ -98,30 +98,6 @@ def main():
         print(f"❌ Error setting up QA chain: {e}")
         return
     
-    # Demo queries
-    demo_questions = [
-        "What is Pasvalys?",
-        "What happened in 1557 in Pasvalys?",
-        "What sports teams does Pasvalys have?",
-        "What museums are in Pasvalys?",
-        "Tell me about the history of Pasvalys during Soviet occupation."
-    ]
-    
-    print("\n🎯 Demo Questions and Answers:")
-    print("=" * 50)
-    
-    for i, question in enumerate(demo_questions, 1):
-        print(f"\n{i}. Question: {question}")
-        try:
-            result = qa_chain.invoke({"query": question})
-            print(f"   Answer: {result['result']}")
-            
-            # Show source information
-            if result.get('source_documents'):
-                print(f"   📖 Sources: {len(result['source_documents'])} document chunks")
-        except Exception as e:
-            print(f"   ❌ Error: {e}")
-    
     # Interactive mode
     print("\n💬 Interactive Mode (type 'quit' to exit):")
     print("=" * 50)
