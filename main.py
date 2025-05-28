@@ -23,20 +23,17 @@ def main():
         return
     
     print("🔍 Creating vector embeddings...")
-    try:
-        vector_store = create_vector_store(text_content)
-        print("✅ Vector store created successfully!")
-    except Exception as e:
-        print(f"❌ Error creating vector store: {e}")
+    vector_store = create_vector_store(text_content)
+    if not vector_store:
         return
+    print("✅ Vector store created successfully!")
     
     print("🤖 Setting up QA chain...")
-    try:
-        qa_chain = create_qa_chain(vector_store)
-        print("✅ QA chain ready!")
-    except Exception as e:
-        print(f"❌ Error setting up QA chain: {e}")
+    result = create_qa_chain(vector_store)
+    if not result:
         return
+    qa_chain, retriever = result
+    print("✅ QA chain ready!")
     
     # Interactive mode
     print("\n💬 Interactive Mode (type 'quit' to exit):")
@@ -53,14 +50,16 @@ def main():
             continue
             
         try:
-            result = qa_chain.invoke({"query": user_question})
-            print(f"🤖 Answer: {result['result']}")
+            # Get the answer from the RAG chain
+            answer = qa_chain.invoke(user_question)
+            print(f"🤖 Answer: {answer}")
             
-            # Show source information
-            if result.get('source_documents'):
-                print(f"\n📖 Sources used ({len(result['source_documents'])} chunks):")
+            # Get source documents separately for transparency
+            source_docs = retriever.invoke(user_question)
+            if source_docs:
+                print(f"\n📖 Sources used ({len(source_docs)} chunks):")
                 print("-" * 40)
-                for i, doc in enumerate(result['source_documents'], 1):
+                for i, doc in enumerate(source_docs, 1):
                     # Show the full source content
                     content = doc.page_content.strip()
                     
